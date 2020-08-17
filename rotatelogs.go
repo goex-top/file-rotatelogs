@@ -42,6 +42,7 @@ func New(p string, options ...Option) (*RotateLogs, error) {
 	var maxAge time.Duration
 	var handler Handler
 	var forceNewFile bool
+	var fileHeader = make([]string, 0)
 
 	for _, o := range options {
 		switch o.Name() {
@@ -65,6 +66,8 @@ func New(p string, options ...Option) (*RotateLogs, error) {
 			handler = o.Value().(Handler)
 		case optkeyForceNewFile:
 			forceNewFile = true
+		case optkeyHeader:
+			fileHeader = o.Value().([]string)
 		}
 	}
 
@@ -87,6 +90,7 @@ func New(p string, options ...Option) (*RotateLogs, error) {
 		rotationTime:  rotationTime,
 		rotationCount: rotationCount,
 		forceNewFile:  forceNewFile,
+		fileHeader:    strings.Join(fileHeader, ","),
 	}, nil
 }
 
@@ -209,6 +213,11 @@ func (rl *RotateLogs) getWriter_nolock(bailOnRotateFail, useGenerationalNames bo
 	rl.curFn = filename
 	rl.generation = generation
 
+	if forceNewFile {
+		if len(rl.fileHeader) > 0 {
+			fh.Write([]byte(rl.fileHeader))
+		}
+	}
 	if h := rl.eventHandler; h != nil {
 		go h.Handle(&FileRotatedEvent{
 			prev:    previousFn,

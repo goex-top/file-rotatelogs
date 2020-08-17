@@ -47,6 +47,7 @@ type RotateLogs struct {
 	rotationTime  time.Duration
 	rotationCount uint
 	forceNewFile  bool
+	fileHeader    string
 }
 
 // Clock is the interface used by the RotateLogs

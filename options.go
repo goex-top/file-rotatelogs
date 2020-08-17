@@ -3,7 +3,7 @@ package rotatelogs
 import (
 	"time"
 
-	"github.com/lestrrat-go/file-rotatelogs/internal/option"
+	"github.com/goex-top/file-rotatelogs/internal/option"
 )
 
 const (
@@ -14,6 +14,7 @@ const (
 	optkeyRotationTime  = "rotation-time"
 	optkeyRotationCount = "rotation-count"
 	optkeyForceNewFile  = "force-new-file"
+	optkeyHeader        = "force-file-header"
 )
 
 // WithClock creates a new Option that sets a clock
@@ -75,8 +76,12 @@ func WithHandler(h Handler) Option {
 }
 
 // ForceNewFile ensures a new file is created every time New()
-// is called. If the base file name already exists, an implicit 
+// is called. If the base file name already exists, an implicit
 // rotation is performed
 func ForceNewFile() Option {
 	return option.New(optkeyForceNewFile, true)
+}
+
+func WithFileHeader(header []string) Option {
+	return option.New(optkeyHeader, header)
 }
